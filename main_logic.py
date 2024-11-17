@@ -1,0 +1,2 @@
+from trade_logic import calculate_pip_difference
+

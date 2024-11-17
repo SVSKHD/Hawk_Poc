@@ -1,3 +1,5 @@
+
+
 def calculate_pip_difference(symbol, current_price, start_price):
     pip_size = symbol['pip_size']
     print(pip_size)
@@ -13,16 +15,28 @@ def calculate_pip_difference(symbol, current_price, start_price):
     return data
 
 
-def threshold_trigger(symbol, pip_data):
-    if pip_data>1:
-        print("positive direction ^")
-    elif pip_data<0:
-        print("negative direction >")
+def threshold_detector(symbol, threshold):
+    print("threshold", symbol["symbol"], threshold)
 
-def execute_logic(symbol, current_price, start_price):
-    result = calculate_pip_difference(symbol, current_price, start_price)
-    threshold = result['thresholds']
-    threshold_trigger(symbol,threshold)
+def execute_trade(symbol, start_price, current_price):
+    threshold = calculate_pip_difference(symbol, start_price, current_price)
+    data=threshold_detector(symbol, threshold)
+    print("execute",data)
+    return data
+
+
+
+
+# def threshold_trigger(symbol, pip_data):
+#     if pip_data>1:
+#         print("positive direction ^")
+#     elif pip_data<0:
+#         print("negative direction >")
+
+# def execute_logic(symbol, current_price, start_price):
+#     result = calculate_pip_difference(symbol, current_price, start_price)
+#     threshold = result['thresholds']
+#     threshold_trigger(symbol,threshold)
 
 
 start_price = 1.07130
@@ -48,6 +62,8 @@ prices = [
     1.07210,
 ]
 
-for price in prices:
-    calculate = execute_logic(symbol_data, price, start_price)
-    print(calculate)
+execute_trade(symbol_data, start_price, start_price)
+
+# for price in prices:
+#     calculate = execute_logic(symbol_data, price, start_price)
+#     print(calculate)
