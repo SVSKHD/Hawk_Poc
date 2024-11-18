@@ -1,5 +1,4 @@
 
-
 def calculate_pip_difference(symbol, current_price, start_price):
     pip_size = symbol['pip_size']
     print(pip_size)
@@ -20,8 +19,8 @@ def threshold_detector(symbol, threshold):
 
 def execute_trade(symbol, start_price, current_price):
     threshold = calculate_pip_difference(symbol, start_price, current_price)
-    data=threshold_detector(symbol, threshold)
-    print("execute",data)
+    dat a =threshold_detector(symbol, threshold)
+    print("execute" ,data)
     return data
 
 

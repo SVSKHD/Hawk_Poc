@@ -3,6 +3,7 @@ from utils import connect_mt5
 from fetch_prices import fetch_current_price, fetch_price
 import asyncio
 
+
 async def main():
     connect = await connect_mt5()
     if connect:
@@ -25,6 +26,7 @@ async def main():
                     data['current_price'] = current_price
                     print(f"Symbol: {data['symbol']}, Current Price: {current_price}")
             await asyncio.sleep(1)  # Wait for 1 second before fetching the prices again
+
 
 if __name__ == "__main__":
     asyncio.run(main())

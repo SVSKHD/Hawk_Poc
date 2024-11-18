@@ -1,4 +1,6 @@
 from state2 import TradingState
+
+
 def calculate_pip_difference(symbol, current_price, start_price):
     """
     Calculate pip difference and determine threshold direction.
@@ -51,7 +53,8 @@ def process_prices_with_hedging(symbol, prices, start_price):
         direction = data['direction']
 
         # Debugging logs
-        print(f"Debug: Evaluating price {price}, Direction: {direction}, Threshold Difference: {data['format_symbol_pip_difference']}")
+        print(
+            f"Debug: Evaluating price {price}, Direction: {direction}, Threshold Difference: {data['format_symbol_pip_difference']}")
 
         # Handle positive thresholds and hedging
         if not state.positive_threshold and data['format_symbol_pip_difference'] >= 1:
@@ -102,7 +105,7 @@ positive_prices = [
     1.06900,  # Threshold hit
     1.07000,  # Beyond threshold
     1.06850,  # Back below hedging activation
-    1.06800   # Hedging triggered
+    1.06800  # Hedging triggered
 ]
 
 negative_prices = [
@@ -111,7 +114,7 @@ negative_prices = [
     1.06650,  # Threshold hit
     1.06550,  # Beyond threshold
     1.06680,  # Back above hedging activation
-    1.06720   # Hedging triggered
+    1.06720  # Hedging triggered
 ]
 
 # Process positive prices
