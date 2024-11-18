@@ -63,7 +63,7 @@ async def fetch_friday_closing_price(symbol):
     rates = await asyncio.to_thread(mt5.copy_rates_from, symbol["symbol"], mt5.TIMEFRAME_M5, utc_from, 1)
     if rates is not None and len(rates) > 0:
         closing_price = rates[0]['close']
-        print(f"Fetched last Friday's closing price for {symbol}: {closing_price}")
+        # print(f"Fetched last Friday's closing price for {symbol}: {closing_price}")
         return closing_price
 
     print(f"Failed to get last Friday's closing price for {symbol}")
