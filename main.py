@@ -6,19 +6,17 @@ from trade_logic_normal import process_prices_with_hedging
 
 def check_thresholds(data):
     symbol_name = data['symbol']
-    direction = data['direction']
     threshold = data['threshold']
     current_price = data['current_price']
-    positive_threshold_reached = data['positive_threshold_reached']
-    positive_hedging_activated = data['positive_hedging_activated']
-    negative_threshold_reached = data['negative_threshold_reached']
-    negative_hedging_activated = data['negative_hedging_activated']
-    if positive_threshold_reached:
-        if threshold>1:
-            print(f"Positive threshold reached for {symbol_name} at {current_price} with threshold {threshold}.")
-    elif negative_threshold_reached:
-        if threshold<-1:
-            print(f"Negative threshold reached for {symbol_name} at {current_price}. with threshold {threshold}")
+
+    if data['positive_threshold_reached'] and threshold > 1:
+        print(f"Positive threshold reached for {symbol_name} at {current_price} with threshold {threshold}.")
+    elif data['negative_threshold_reached'] and threshold < -1:
+        print(f"Negative threshold reached for {symbol_name} at {current_price} with threshold {threshold}.")
+    elif data['positive_hedging_activated'] and threshold < 0.5:
+        print(f"Positive hedging reached for {symbol_name} at {current_price} with threshold {threshold}.")
+    elif data['negative_hedging_activated'] and threshold >= -0.5:
+        print(f"Negative hedging reached for {symbol_name} at {current_price} with threshold {threshold}.")
 
 async def main():
     connect = await connect_mt5()

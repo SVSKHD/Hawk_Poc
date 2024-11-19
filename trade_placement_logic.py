@@ -1,6 +1,8 @@
 import asyncio
 import MetaTrader5 as mt5
-from notifications import send_limited_message
+from utils import get_open_positions
+from datetime import datetime
+from notifications import send_discord_message_async, send_limited_message
 
 TRADE_LIMIT = 3
 
