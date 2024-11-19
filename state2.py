@@ -1,25 +1,23 @@
 class TradingState:
-    _instance = None
+    _instances = {}
 
     def __init__(self):
-        self.positive_hedging = False  # For buy direction hedging
-        self.negative_hedging = False  # For sell direction hedging
-        self.positive_threshold = False  # Indicates positive threshold reached
-        self.negative_threshold = False  # Indicates negative threshold reached
-        self.positive_hedging_price = None  # Price for buy direction hedging
-        self.negative_hedging_price = None  # Price for sell direction hedging
-        self.positive_threshold_price = None  # Price for positive threshold
-        self.negative_threshold_price = None  # Price for negative threshold
+        self.positive_hedging = False
+        self.negative_hedging = False
+        self.positive_threshold = False
+        self.negative_threshold = False
+        self.positive_hedging_price = None
+        self.negative_hedging_price = None
+        self.positive_threshold_price = None
+        self.negative_threshold_price = None
 
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(TradingState, cls).__new__(cls)
-        return cls._instance
+    @classmethod
+    def get_instance(cls, symbol):
+        if symbol not in cls._instances:
+            cls._instances[symbol] = cls()
+        return cls._instances[symbol]
 
     def update(self, **kwargs):
-        """
-        Update the state with the provided keyword arguments.
-        """
         for key, value in kwargs.items():
             setattr(self, key, value)
 
