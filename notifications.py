@@ -1,5 +1,9 @@
 import aiohttp
+from datetime import datetime
+import logging
 
+last_message_time = {}
+MESSAGE_INTERVAL = 60
 async def send_discord_message_async(message):
     webhook_url = "https://discord.com/api/webhooks/1286192684834488350/gmXLG-RJT7WdiVNcT5Jw610lstwHRrU-lMmEgcBmQ538HlJp7ya1UyY7MJ46n5OAlIrk"
     data = {"content": message}
@@ -13,3 +17,14 @@ async def send_discord_message_async(message):
                     print(f"Failed to send message: {response.status}, {await response.text()}")
         except Exception as e:
             print(f"Error sending message: {e}")
+
+
+async def send_limited_message(symbol, message):
+    current_time = datetime.now()
+    last_time = last_message_time.get(symbol)
+    if last_time is None or (current_time - last_time).total_seconds() > MESSAGE_INTERVAL:
+        logging.info(f"Sending message for {symbol}: {message}")
+        await send_discord_message_async(message)
+        last_message_time[symbol] = current_time
+    else:
+        logging.info(f"Message for {symbol} rate-limited; not sent.")

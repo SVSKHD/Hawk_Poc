@@ -1,58 +1,53 @@
-# from MetaTrader5 import mt5
-from state2 import TradingState
-async def place_order(symbol, action, volume):
-    """
-    Place an order on MT5.
+import asyncio
+import MetaTrader5 as mt5
+from notifications import send_limited_message
 
-    :param symbol: Symbol to place the order on.
-    :param action: Action to take (BUY/SELL).
-    :param volume: Volume of the order.
-    :return: Order result.
-    """
+TRADE_LIMIT = 3
+
+async def place_trade_notify(symbol, action, lot_size):
+    """Asynchronously place a trade and notify via Discord."""
+    open_positions = await get_open_positions({"symbol": symbol})
+    if open_positions["no_of_positions"] >= TRADE_LIMIT:
+        await send_limited_message(symbol, f"Trade limit reached for {symbol}. No further trades will be placed.")
+        return  # Skip trade placement if limit is reached
+    selected = await asyncio.to_thread(mt5.symbol_select, symbol, True)
+    if not selected:
+        print(f"Failed to select symbol {symbol}")
+        return
+
+    price_info = await asyncio.to_thread(mt5.symbol_info_tick, symbol)
+    if price_info is None:
+        print(f"Failed to get tick information for {symbol}")
+        return
+
+    price = price_info.ask if action == 'buy' else price_info.bid
+    lot = lot_size if lot_size is not None else 1.0
+    deviation = 50
+
     request = {
-        "action": action,
+        "action": mt5.TRADE_ACTION_DEAL,
         "symbol": symbol,
-        "volume": volume,
-        "type": mt5.ORDER_TYPE_MARKET,
-        "price": 0,
-        "sl": 0,
-        "tp": 0,
-        "deviation": 20,
+        "volume": lot,
+        "type": mt5.ORDER_TYPE_BUY if action == 'buy' else mt5.ORDER_TYPE_SELL,
+        "price": price,
+        "deviation": deviation,
         "magic": 234000,
-        "comment": "Hawk POC"
+        "comment": "python script open",
+        "type_time": mt5.ORDER_TIME_GTC,
+        "type_filling": mt5.ORDER_FILLING_FOK,
     }
 
-    result = mt5.order_send(request)
-    return result
+    result = await asyncio.to_thread(mt5.order_send, request)
 
-async def close_order(order):
-    """
-    Close an order on MT5.
+    if result is None:
+        message = f"Order send error: {mt5.last_error()}"
+        print(message)
+        await send_discord_message_async(message)
+    else:
+        if result.retcode != mt5.TRADE_RETCODE_DONE:
+            message = f"Trade request failed for {symbol}, retcode={result.retcode}"
+        else:
+            now = datetime.now()
+            message = f"Trade executed successfully at {now}, order={result}"
 
-    :param order: Order to close.
-    :return: Close order result.
-    """
-    request = {
-        "action": mt5.ORDER_ACTION_CLOSE,
-        "ticket": order.ticket,
-        "volume": order.volume
-    }
-
-    result = mt5.order_send(request)
-    return result
-
-
-async def close_all_orders():
-    """
-    Close all orders on MT5.
-    """
-    orders = mt5.orders_get()
-    for order in orders:
-        await close_order(order)
-    print("All orders closed.")
-
-def check_state_and_place_trade():
-    print('state', TradingState.get_instance('EURJPY'))
-
-check_state_and_place_trade()
-
+        print(message)
