@@ -1,5 +1,5 @@
-from MetaTrader5 import mt5
-
+# from MetaTrader5 import mt5
+from state2 import TradingState
 async def place_order(symbol, action, volume):
     """
     Place an order on MT5.
@@ -50,3 +50,9 @@ async def close_all_orders():
     for order in orders:
         await close_order(order)
     print("All orders closed.")
+
+def check_state_and_place_trade():
+    print('state', TradingState.get_instance('EURJPY'))
+
+check_state_and_place_trade()
+
