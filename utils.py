@@ -2,6 +2,7 @@ import asyncio
 import MetaTrader5 as mt5
 import logging
 from notifications import send_limited_message, send_discord_message_async
+from datetime import datetime
 
 
 async def log_error_and_notify(message):

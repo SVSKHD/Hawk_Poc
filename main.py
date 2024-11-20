@@ -3,6 +3,7 @@ from utils import connect_mt5
 from fetch_prices import fetch_current_price, fetch_price
 import asyncio
 from trade_logic_normal import process_prices_with_hedging
+from trade_placement_logic import place_trade_notify, close_trades_by_symbol
 
 def check_thresholds(data):
     symbol_name = data['symbol']
@@ -11,6 +12,7 @@ def check_thresholds(data):
 
     if data['positive_threshold_reached'] and threshold > 1:
         print(f"Positive threshold reached for {symbol_name} at {current_price} with threshold {threshold}.")
+
     elif data['negative_threshold_reached'] and threshold < -1:
         print(f"Negative threshold reached for {symbol_name} at {current_price} with threshold {threshold}.")
     elif data['positive_hedging_activated'] and threshold < 0.5:
@@ -43,6 +45,7 @@ async def main():
                     if symbol:
                         threshold_triggered = process_prices_with_hedging(symbol, data['current_price'], data['start_price'])
                         check_thresholds(threshold_triggered)
+                        print("symbol", symbol)
             await asyncio.sleep(1)  # Wait for 1 second before fetching the prices again
 
 
