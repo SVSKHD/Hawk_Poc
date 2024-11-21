@@ -63,7 +63,7 @@ async def hedge_place_trade(symbol, action, lot_size):
     open_positions = await get_open_positions({"symbol": symbol_name})
     current_open_positions = open_positions["no_of_positions"]
 
-    if current_open_positions >= TRADE_LIMIT + HEDGE_TRADE_LIMIT:
+    if current_open_positions == TRADE_LIMIT + HEDGE_TRADE_LIMIT:
         await send_discord_message_trade_async(f"Trade limit reached for {symbol}. No further hedging trades will be placed.")
         return  # Skip trade placement if limit is reached
 
