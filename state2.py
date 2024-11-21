@@ -10,6 +10,9 @@ class TradingState:
         self.negative_hedging_price = None
         self.positive_threshold_price = None
         self.negative_threshold_price = None
+        self.account = None  # Add account attribute
+        self.stop_trades = False
+        self.daily_profit = False
 
     @classmethod
     def get_instance(cls, symbol):
@@ -30,5 +33,6 @@ class TradingState:
             f"negative_threshold={self.negative_threshold}, "
             f"negative_hedging={self.negative_hedging}, "
             f"negative_threshold_price={self.negative_threshold_price}, "
-            f"negative_hedging_price={self.negative_hedging_price})"
+            f"negative_hedging_price={self.negative_hedging_price}, "
+            f"account={self.account})"
         )

@@ -49,3 +49,4 @@ async def get_open_positions(symbol):
         await send_limited_message(symbol_name, f"No positions exist for {symbol_name} at {datetime.now()}")
 
     return open_positions
+
