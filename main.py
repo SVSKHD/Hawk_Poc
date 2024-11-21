@@ -3,7 +3,8 @@ import logging
 from config import symbols_config
 from utils import connect_mt5
 from fetch_prices import fetch_current_price, fetch_price
-from trade_logic_normal import process_prices_with_hedging
+# from trade_logic_normal import process_prices_with_hedging
+from trading_logic_2 import process_prices_with_hedging
 from trade_placement_logic import place_trade_notify, close_trades_by_symbol
 
 logging.basicConfig(level=logging.INFO)

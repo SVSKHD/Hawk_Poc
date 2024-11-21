@@ -3,7 +3,11 @@ import MetaTrader5 as mt5
 import logging
 from notifications import send_limited_message, send_discord_message_async
 from datetime import datetime
+from state2 import TradingState
 
+
+
+state = TradingState()
 
 async def log_error_and_notify(message):
     logging.error(message)
@@ -25,6 +29,7 @@ async def connect_mt5():
     if authorized:
         account = await asyncio.to_thread(mt5.account_info)
         balance = account.balance
+        state.account = account
         print(f"Successfully logged into account {login} on server {server}")
         print(f"balance {balance}")
     if not authorized:
