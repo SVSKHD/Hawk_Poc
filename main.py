@@ -8,30 +8,39 @@ from trade_placement_logic import place_trade_notify, close_trades_by_symbol
 
 logging.basicConfig(level=logging.INFO)
 
+import asyncio
+import logging
+
 def check_thresholds(data, symbol):
     symbol_name = data['symbol']
     threshold = data['threshold']
     current_price = data['current_price']
     lot_size = symbol['lot_size']
-    print("symbol", symbol)
-    if data['positive_threshold_reached'] and threshold > 1:
-        logging.info(f"Positive threshold reached for {symbol_name} at {current_price} with threshold {threshold}.")
-        asyncio.create_task(place_trade_notify(symbol, "buy", lot_size))
-    elif data['negative_threshold_reached'] and threshold < -1:
-        logging.info(f"Negative threshold reached for {symbol_name} at {current_price} with threshold {threshold}.")
-        asyncio.create_task(place_trade_notify(symbol, "sell", lot_size))
+
+    logging.info(f"Checking thresholds for symbol: {symbol_name}")
+
+    if data['positive_threshold_reached']:
+        if threshold > 1:
+            logging.info(f"Positive threshold reached for {symbol_name} at {current_price} with threshold {threshold}.")
+            asyncio.create_task(place_trade_notify(symbol, "buy", lot_size))
+        if threshold >= 2:
+            logging.info(f"Closing trades for symbol: {symbol_name}")
+            close_trades_by_symbol(symbol)
+    elif data['negative_threshold_reached']:
+        if threshold < -1:
+            logging.info(f"Negative threshold reached for {symbol_name} at {current_price} with threshold {threshold}.")
+            asyncio.create_task(place_trade_notify(symbol, "sell", lot_size))
+        if threshold <= -2:
+            logging.info(f"Closing trades for symbol: {symbol_name}")
+            close_trades_by_symbol(symbol)
     elif data['positive_hedging_activated'] and threshold < 0.5:
         logging.info(f"Positive hedging reached for {symbol_name} at {current_price} with threshold {threshold}.")
     elif data['negative_hedging_activated'] and threshold >= -0.5:
         logging.info(f"Negative hedging reached for {symbol_name} at {current_price} with threshold {threshold}.")
-    elif data['positive_threshold_reached'] and threshold >= 2:
-        print("Closing trades for symbol", symbol_name)
-    elif data['negative_threshold_reached'] and threshold <= -2:
-        print("Closing trades for symbol", symbol_name)
 
     # handle hedging and threshold deactivated case
     # handle the trade discord bot code.
-    # chek the profit and also close code and also add the state to the data.
+    # check the profit and also close code and also add the state to the data.
 
 async def main():
     connect = await connect_mt5()

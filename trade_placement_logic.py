@@ -99,6 +99,7 @@ async def hedge_place_trade(symbol, action, lot_size):
         await send_limited_message(symbol, message)
 
 async def close_trades_by_symbol(symbol):
+    symbol_name = symbol['symbol']
     open_positions = await asyncio.to_thread(mt5.positions_get, symbol=symbol)
 
     if open_positions is None or len(open_positions) == 0:

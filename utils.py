@@ -22,11 +22,16 @@ async def connect_mt5():
     server = "OctaFX-Demo"  # Replace with actual server
 
     authorized = await asyncio.to_thread(mt5.login, login, password, server)
+    if authorized:
+        account = await asyncio.to_thread(mt5.account_info)
+        balance = account.balance
+        print(f"Successfully logged into account {login} on server {server}")
+        print(f"balance {balance}")
     if not authorized:
         print(f"Login failed for account {login}")
         return False
 
-    print(f"Successfully logged into account {login} on server {server}")
+
     return True
 
 
