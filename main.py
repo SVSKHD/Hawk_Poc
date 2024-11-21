@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO)
 import asyncio
 import logging
 
+
 def check_thresholds(data, symbol):
     symbol_name = data['symbol']
     threshold = data['threshold']
@@ -39,9 +40,6 @@ def check_thresholds(data, symbol):
     elif data['negative_hedging_activated'] and threshold >= -0.5:
         logging.info(f"Negative hedging reached for {symbol_name} at {current_price} with threshold {threshold}.")
 
-    # handle hedging and threshold deactivated case
-    # handle the trade discord bot code.
-    # check the profit and also close code and also add the state to the data.
 
 async def main():
     connect = await connect_mt5()
@@ -64,9 +62,16 @@ async def main():
                     data['current_price'] = current_price
                     symbol = next((s for s in symbols_config if s['symbol'] == data['symbol']), None)
                     if symbol:
-                        threshold_triggered = process_prices_with_hedging(symbol, data['current_price'], data['start_price'])
+                        threshold_triggered = process_prices_with_hedging(symbol, data['current_price'],
+                                                                          data['start_price'])
                         check_thresholds(threshold_triggered, symbol)
             await asyncio.sleep(1)
 
+
 if __name__ == "__main__":
     asyncio.run(main())
+
+#Note
+# 1.handle Trades in hedging case as of now it is handled in logging.
+# 2.thresholds check price whether the current price and placed price is same
+# 3.check the placed trades functions
