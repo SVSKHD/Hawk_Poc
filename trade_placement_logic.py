@@ -2,7 +2,7 @@ import asyncio
 import MetaTrader5 as mt5
 from utils import get_open_positions
 from datetime import datetime
-from notifications import send_discord_message_async, send_limited_message, send_discord_message_trade_async
+from notifications import send_discord_message_async, send_discord_message_trade_async
 
 TRADE_LIMIT = 2
 HEDGE_TRADE_LIMIT = 2 * TRADE_LIMIT
