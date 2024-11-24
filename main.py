@@ -1,7 +1,5 @@
 import asyncio
 import logging
-import asyncio
-import logging
 from config import symbols_config
 from utils import connect_mt5
 from fetch_prices import fetch_current_price, fetch_price
@@ -46,6 +44,10 @@ def check_thresholds(data, symbol):
             logging.info(f"Closing trades after hedging for {symbol_name}")
             asyncio.create_task(close_trades_by_symbol(symbol))
         logging.info(f"Negative hedging reached for {symbol_name} at {current_price} with threshold {threshold}.")
+    elif data[ 'positive_threshold_reached'] and data['negative_threshold_reached']:
+        logging.info(f"Don't Trade: {symbol_name}")
+    elif data['positive_hedging_activated'] and data['negative_hedging_activated']:
+        logging.info(f"Don't Trade: {symbol_name}")
 
 
 async def main():
@@ -71,6 +73,7 @@ async def main():
                     if symbol:
                         threshold_triggered = process_prices_with_hedging(symbol, data['current_price'], data['start_price'])
                         check_thresholds(threshold_triggered, symbol)
+                        logging.info(f"Thresholds checked for {data['symbol']} -{check_thresholds(threshold_triggered, symbol)}")
             await asyncio.sleep(1)
 
 

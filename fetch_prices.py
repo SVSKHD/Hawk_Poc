@@ -35,6 +35,7 @@ async def fetch_price(symbol, price_type):
 
     if price_type == "current":
         tick = await asyncio.to_thread(mt5.symbol_info_tick, symbol_name)
+        logging.info(f"Fetching current price for {symbol_name}-current_price{tick.bid}")
         if tick:
             return tick.bid  # or tick.ask depending on requirements
 
@@ -46,6 +47,7 @@ async def fetch_price(symbol, price_type):
         start_of_day_utc = now.replace(hour=0, minute=0, second=0).astimezone(pytz.utc)
         rates = await asyncio.to_thread(mt5.copy_rates_from, symbol_name, mt5.TIMEFRAME_M5, start_of_day_utc, 1)
         if rates:
+            logging.info(f"Fetching start price for {symbol_name}-start_price: {rates[0]['close']}")
             return rates[0]["close"]
 
     await log_error_and_notify(f"Failed to get {price_type} price for {symbol_name}")

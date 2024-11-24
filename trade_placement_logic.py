@@ -13,8 +13,7 @@ async def place_trade_notify(symbol, action, lot_size):
     symbol_name = symbol['symbol']
     open_positions = await get_open_positions({"symbol": symbol_name})
     if open_positions["no_of_positions"] >= TRADE_LIMIT:
-        await send_discord_message_trade_async(symbol,
-                                               f"Trade limit reached for {symbol}. No further trades will be placed.")
+        await send_discord_message_trade_async(f"Trade limit reached for {symbol}. No further trades will be placed.")
         return  # Skip trade placement if limit is reached
     selected = await asyncio.to_thread(mt5.symbol_select, symbol_name, True)
     if not selected:

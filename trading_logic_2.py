@@ -101,5 +101,5 @@ def process_prices_with_hedging(symbol, current_price, start_price):
         'negative_threshold_reached': state.negative_threshold,
         'negative_hedging_activated': state.negative_hedging
     }
-    # print(message)
+    print(message)
     return data
