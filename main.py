@@ -1,5 +1,3 @@
-from numpy.lib.function_base import place
-
 from config import symbols_config
 from storage_state import get_symbol_data
 from utils import connect_mt5
