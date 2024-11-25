@@ -39,7 +39,12 @@ def decompress_data(compressed_data):
 def save_symbol_data(key, symbol_data):
     if redis_client:
         try:
-            compressed_data = compress_data(symbol_data)
+            existing_data = get_symbol_data(key)
+            if existing_data:
+                existing_data.update(symbol_data)
+                compressed_data = compress_data(existing_data)
+            else:
+                compressed_data = compress_data(symbol_data)
             redis_client.set(key, compressed_data)
             print(f"Compressed data saved under key: {key}")
         except Exception as e:
