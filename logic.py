@@ -6,6 +6,7 @@ from storage_state import save_symbol_data, get_symbol_data, update_symbol_data
 def analyze_pip_difference(symbol: Dict, start_price: float, current_price: float):
     symbol_name = symbol["symbol"]
     threshold_data = get_symbol_data(symbol_name)
+    print("threshold_data", threshold_data)
     pip_size = symbol.get("pip_size", 0.0001)
     positive_pip_difference = symbol.get("positive_pip_difference", 1)
     pip_difference = (current_price - start_price) / pip_size
@@ -31,14 +32,11 @@ def analyze_pip_difference(symbol: Dict, start_price: float, current_price: floa
             'start_price': start_price,
             'current_price': current_price}
 
-    # print(f"{symbol_name} pip_difference: {pip_difference}, check_thresholds: {check_thresholds}")
-
     # Check positive thresholds
     if check_thresholds >= 2:
         data['positive_second_threshold'] = True
         data['positive_second_threshold_price'] = current_price
         update_symbol_data(symbol_name, data)
-        # print(f"2nd positive threshold met {data}")
 
     if check_thresholds >= 1:
         print("Positive threshold met")
@@ -46,18 +44,16 @@ def analyze_pip_difference(symbol: Dict, start_price: float, current_price: floa
         data['positive_threshold_price'] = current_price
         save_symbol_data(symbol_name, data)
 
-    if threshold_data['positive_threshold'] and check_thresholds <= 0.5:
+    if threshold_data and threshold_data['positive_threshold'] and check_thresholds <= 0.5:
         data['positive_hedging'] = True
         data['positive_hedging_price'] = current_price
         update_symbol_data(symbol_name, data)
-        # print(f"Near to hedging (positive): {check_thresholds} - {current_price}")
 
     # Check negative thresholds
     if check_thresholds <= -2:
         data['negative_second_threshold'] = True
         data['negative_threshold_price'] = current_price
         update_symbol_data(symbol_name, data)
-        # print("2nd negative threshold met")
 
     if check_thresholds <= -1:
         print("Negative threshold met")
@@ -65,11 +61,10 @@ def analyze_pip_difference(symbol: Dict, start_price: float, current_price: floa
         data['negative_threshold_price'] = current_price
         save_symbol_data(symbol_name, data)
 
-    if threshold_data['negative_threshold'] and check_thresholds >= -0.5:
+    if threshold_data and threshold_data['negative_threshold'] and check_thresholds >= -0.5:
         data['negative_hedging'] = True
         data['negative_hedging_price'] = current_price
         update_symbol_data(symbol_name, data)
-        # print(f"Near to hedging (negative): {check_thresholds} - {current_price}")
 
     print("---------------------------------------------------------------------")
 

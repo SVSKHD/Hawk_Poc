@@ -35,19 +35,25 @@ async def fetch_price(symbol, price_type):
 
     if price_type == "current":
         tick = await asyncio.to_thread(mt5.symbol_info_tick, symbol_name)
-        logging.info(f"Fetching current price for {symbol_name}-current_price{tick.bid}")
         if tick:
+            logging.info(f"Fetching current price for {symbol_name} - current_price: {tick.bid}")
             return tick.bid  # or tick.ask depending on requirements
 
     elif price_type == "start":
         now = datetime.now(pytz.timezone('Asia/Kolkata'))
         if now.weekday() == 0:  # Monday
-            return await fetch_friday_closing_price(symbol)
+            # Fetch the price at the start of Monday
+            start_of_monday_utc = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc)
+            rates = await asyncio.to_thread(mt5.copy_rates_from, symbol_name, mt5.TIMEFRAME_M5, start_of_monday_utc, 1)
+            if rates and len(rates) > 0:
+                logging.info(f"Fetching Monday start price for {symbol_name} - start_price: {rates[0]['close']}")
+                return rates[0]["close"]
 
-        start_of_day_utc = now.replace(hour=0, minute=0, second=0).astimezone(pytz.utc)
+        # For other days, fetch the start price of the day
+        start_of_day_utc = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc)
         rates = await asyncio.to_thread(mt5.copy_rates_from, symbol_name, mt5.TIMEFRAME_M5, start_of_day_utc, 1)
-        if rates:
-            logging.info(f"Fetching start price for {symbol_name}-start_price: {rates[0]['close']}")
+        if rates and len(rates) > 0:
+            logging.info(f"Fetching start price for {symbol_name} - start_price: {rates[0]['close']}")
             return rates[0]["close"]
 
     await log_error_and_notify(f"Failed to get {price_type} price for {symbol_name}")
@@ -65,8 +71,8 @@ async def fetch_friday_closing_price(symbol):
     rates = await asyncio.to_thread(mt5.copy_rates_from, symbol["symbol"], mt5.TIMEFRAME_M5, utc_from, 1)
     if rates is not None and len(rates) > 0:
         closing_price = rates[0]['close']
-        # print(f"Fetched last Friday's closing price for {symbol}: {closing_price}")
+        logging.info(f"Fetched last Friday's closing price for {symbol['symbol']}: {closing_price}")
         return closing_price
 
-    print(f"Failed to get last Friday's closing price for {symbol}")
+    await log_error_and_notify(f"Failed to get last Friday's closing price for {symbol['symbol']}")
     return None

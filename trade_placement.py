@@ -111,8 +111,9 @@ async def hedge_place_trade(symbol, action, lot_size):
 
 
 async def close_trades_by_symbol(symbol):
+    print("close", symbol)
     symbol_name = symbol['symbol']
-    open_positions = await asyncio.to_thread(mt5.positions_get, symbol=symbol)
+    open_positions = await asyncio.to_thread(mt5.positions_get, symbol=symbol_name)
 
     if open_positions is None or len(open_positions) == 0:
         print(f"No open positions for {symbol}.")
@@ -122,7 +123,7 @@ async def close_trades_by_symbol(symbol):
         ticket = position.ticket
         lot = position.volume
         trade_type = mt5.ORDER_TYPE_SELL if position.type == mt5.ORDER_TYPE_BUY else mt5.ORDER_TYPE_BUY
-        symbol_info = await asyncio.to_thread(mt5.symbol_info, symbol)
+        symbol_info = await asyncio.to_thread(mt5.symbol_info, symbol_name)
 
         if symbol_info is None:
             print(f"Symbol {symbol} not found.")
@@ -132,7 +133,7 @@ async def close_trades_by_symbol(symbol):
 
         close_request = {
             "action": mt5.TRADE_ACTION_DEAL,
-            "symbol": symbol,
+            "symbol": symbol_name,
             "volume": lot,
             "type": trade_type,
             "position": ticket,
@@ -146,10 +147,10 @@ async def close_trades_by_symbol(symbol):
 
         result = await asyncio.to_thread(mt5.order_send, close_request)
 
-        if result.retcode != mt5.TRADE_RETCODE_DONE:
-            message = f"Failed to close trade {ticket} for {symbol}, error code: {result.retcode}"
-        else:
-            message = f"Successfully closed trade {ticket} for {symbol}."
+        # if result.retcode:
+        #     message = f"Failed to close trade {ticket} for {symbol}, error code: {result.retcode}"
+        # else:
+        #     message = f"Successfully closed trade {ticket} for {symbol}."
 
-        print(message)
-        await send_discord_message_trade_async(message)
+        # print(message)
+        # await send_discord_message_trade_async(message)
