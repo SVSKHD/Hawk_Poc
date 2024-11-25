@@ -103,3 +103,31 @@ def delete_symbol_data(key):
         print("Redis client is not connected.")
 
 
+def save_or_update_start_trade(value: bool):
+    if redis_client:
+        try:
+            compressed_data = compress_data(value)
+            redis_client.set("start_trade", compressed_data)
+            print(f"Start trade set to {value}")
+        except Exception as e:
+            print(f"Error saving or updating start_trade: {e}")
+    else:
+        print("Redis client is not connected.")
+
+
+def get_start_trade():
+    if redis_client:
+        try:
+            compressed_data = redis_client.get("start_trade")
+            if compressed_data:
+                start_trade = decompress_data(compressed_data)
+                return start_trade
+            else:
+                print("No start_trade data found.")
+                return None
+        except Exception as e:
+            print(f"Error retrieving start_trade: {e}")
+            return None
+    else:
+        print("Redis client is not connected.")
+        return None

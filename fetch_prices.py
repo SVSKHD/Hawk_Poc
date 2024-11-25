@@ -4,7 +4,9 @@ import logging
 from utils import log_error_and_notify
 import pytz
 from datetime import datetime, timedelta
+from storage_state import save_or_update_start_trade, get_symbol_data, get_start_trade
 
+start_trade = get_start_trade()
 
 async def fetch_current_price(symbol):
     symbol_name = symbol["symbol"]
@@ -24,7 +26,6 @@ async def fetch_current_price(symbol):
 
 
 async def fetch_price(symbol, price_type):
-    """Fetch price based on type, reusing code for start and current prices."""
     symbol_name = symbol["symbol"]
 
     # Ensure the symbol is selected in Market Watch
@@ -46,6 +47,8 @@ async def fetch_price(symbol, price_type):
             start_of_monday_utc = now.replace(hour=0, minute=0, second=0, microsecond=0).astimezone(pytz.utc)
             rates = await asyncio.to_thread(mt5.copy_rates_from, symbol_name, mt5.TIMEFRAME_M5, start_of_monday_utc, 1)
             if rates and len(rates) > 0:
+                if not start_trade:
+                    save_or_update_start_trade(True)
                 logging.info(f"Fetching Monday start price for {symbol_name} - start_price: {rates[0]['close']}")
                 return rates[0]["close"]
 

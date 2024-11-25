@@ -1,10 +1,11 @@
 from config import symbols_config
-from storage_state import get_symbol_data
+from storage_state import get_symbol_data, get_start_trade, save_or_update_start_trade
 from utils import connect_mt5
 from fetch_prices import fetch_price
 from trade_placement import place_trade_notify, hedge_place_trade, close_trades_by_symbol
 import asyncio
 from logic import analyze_pip_difference
+from datetime import datetime
 
 
 async def check_thresholds_and_trade(symbol):
@@ -54,6 +55,9 @@ async def check_thresholds_and_trade(symbol):
         # if thresold
 
 
+start_trade = get_start_trade()
+
+
 async def main():
     connect = await connect_mt5()
     if connect:
@@ -66,7 +70,14 @@ async def main():
                     'start_price': start_price,
                     'current_price': start_price
                 })
-        while True:
+        while start_trade:
+            current_time = datetime.now().time()
+            if current_time.hour == 12 and current_time.minute == 0:
+                print("It's 12 PM. Setting start_trade to False.")
+                save_or_update_start_trade(False)
+                await asyncio.sleep(60)  # Sleep for 1 minute to avoid continuous checking
+                continue
+
             for data in price_data:
                 current_price = await fetch_price(data, "current")
                 if current_price is not None:
