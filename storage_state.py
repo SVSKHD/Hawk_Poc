@@ -1,9 +1,15 @@
 import redis
 import json
 import zlib
+from dynaconf import Dynaconf
+
+settings = Dynaconf(
+    settings_files=['settings.toml'],
+    environments=True,
+)
 
 # Redis connection details
-redis_url = "redis://default:fyJ2dumlI9w7CIZrrLrpVzUQVoO2K9hZ@redis-15849.c10.us-east-1-2.ec2.redns.redis-cloud.com:15849"
+redis_url = settings.DATABASE_URL
 
 try:
     # Connect to Redis
