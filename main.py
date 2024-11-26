@@ -66,8 +66,15 @@ async def main():
         while True:
             start_trade = get_start_trade()
             if not start_trade:
-                print("Start trade is False. Exiting loop.")
-                break
+                print("Start trade is False. Waiting for next 12 AM to set it to True.")
+                while True:
+                    current_time = datetime.now().time()
+                    if current_time.hour == 0 and current_time.minute == 0:
+                        print("It's 12 AM. Setting start_trade to True.")
+                        save_or_update_start_trade(True)
+                        break
+                    await asyncio.sleep(60)  # Sleep for 1 minute to avoid continuous checking
+                continue
 
             print("start", start_trade)
             current_time = datetime.now().time()
