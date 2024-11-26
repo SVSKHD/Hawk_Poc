@@ -131,3 +131,15 @@ def get_start_trade():
     else:
         print("Redis client is not connected.")
         return None
+
+
+# Clear all keys in Redis
+def clear_all_keys():
+    if redis_client:
+        try:
+            redis_client.flushdb()
+            print("All keys cleared from Redis.")
+        except Exception as e:
+            print(f"Error clearing all keys from Redis: {e}")
+    else:
+        print("Redis client is not connected.")

@@ -1,5 +1,5 @@
 from config import symbols_config
-from storage_state import get_symbol_data, get_start_trade, save_or_update_start_trade
+from storage_state import get_symbol_data, get_start_trade, save_or_update_start_trade, clear_all_keys
 from utils import connect_mt5
 from fetch_prices import fetch_price
 from trade_placement import place_trade_notify, hedge_place_trade, close_trades_by_symbol
@@ -92,6 +92,7 @@ async def main():
             if current_time.hour >= 12:
                 print("It's 12 PM or later. Setting start_trade to False.")
                 save_or_update_start_trade(False)
+                clear_all_keys()
                 await asyncio.sleep(60)  # Sleep for 1 minute to avoid continuous checking
                 continue
 

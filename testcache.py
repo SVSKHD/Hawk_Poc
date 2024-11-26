@@ -1,4 +1,4 @@
-from storage_state import get_symbol_data, save_symbol_data, save_or_update_start_trade, get_start_trade
+from storage_state import get_symbol_data, save_symbol_data, save_or_update_start_trade, get_start_trade, clear_all_keys
 from config import symbols_config
 
 for symbol in symbols_config:
@@ -12,3 +12,4 @@ save_or_update_start_trade(True)
 
 data = get_start_trade()
 print("state", data)
+
