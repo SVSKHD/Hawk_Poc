@@ -7,7 +7,6 @@ import asyncio
 from logic import analyze_pip_difference
 from datetime import datetime
 
-
 async def check_thresholds_and_trade(symbol):
     get_data = get_symbol_data(symbol["symbol"])
     if not get_data:
@@ -50,30 +49,41 @@ async def check_thresholds_and_trade(symbol):
         print("negative_hedging", negative_hedging, negative_hedging_price)
         await hedge_place_trade(symbol, "buy", 1.0)
 
-        # current_price = get_data['current_price']
-        # symbol = next((s for s in symbols_config if s['symbol'] == symbol), None)
-        # if thresold
-
-
-start_trade = get_start_trade()
-
-
 async def main():
     connect = await connect_mt5()
     if connect:
         price_data = []
         for symbol in symbols_config:
             start_price = await fetch_price(symbol, "start")
+            print("checking for 12 am")
             if start_price is not None:
                 price_data.append({
                     'symbol': symbol['symbol'],
                     'start_price': start_price,
                     'current_price': start_price
                 })
-        while start_trade:
+        log_12_am_check = True
+        while True:
+            start_trade = get_start_trade()
+            if not start_trade:
+                print("Start trade is False. Exiting loop.")
+                break
+
+            print("start", start_trade)
             current_time = datetime.now().time()
-            if current_time.hour == 12 and current_time.minute == 0:
-                print("It's 12 PM. Setting start_trade to False.")
+            print(f"Current time: {current_time}")
+            if log_12_am_check:
+                if current_time.hour == 0 and current_time.minute == 0:
+                    if not start_trade:
+                        print("It's 12 AM. Setting start_trade to True.")
+                        save_or_update_start_trade(True)
+                    log_12_am_check = False
+                else:
+                    print("Checking for 12 AM...")
+                await asyncio.sleep(60)  # Sleep for 1 minute to log the time every minute
+                continue
+            if current_time.hour >= 12:
+                print("It's 12 PM or later. Setting start_trade to False.")
                 save_or_update_start_trade(False)
                 await asyncio.sleep(60)  # Sleep for 1 minute to avoid continuous checking
                 continue
@@ -86,7 +96,6 @@ async def main():
                     analyze_pip_difference(symbol, data['start_price'], data['current_price'])
                     await check_thresholds_and_trade(symbol)
             await asyncio.sleep(1)
-
 
 if __name__ == "__main__":
     asyncio.run(main())

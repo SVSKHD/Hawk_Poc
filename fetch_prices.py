@@ -62,7 +62,6 @@ async def fetch_price(symbol, price_type):
     await log_error_and_notify(f"Failed to get {price_type} price for {symbol_name}")
     return None
 
-
 async def fetch_friday_closing_price(symbol):
     """Asynchronously fetch the last Friday's closing price for a symbol."""
     today = datetime.now(pytz.timezone('Asia/Kolkata'))

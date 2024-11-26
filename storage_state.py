@@ -40,7 +40,7 @@ def save_symbol_data(key, symbol_data):
     if redis_client:
         try:
             existing_data = get_symbol_data(key)
-            if existing_data:
+            if existing_data and isinstance(existing_data, dict):
                 existing_data.update(symbol_data)
                 compressed_data = compress_data(existing_data)
             else:
@@ -76,7 +76,7 @@ def update_symbol_data(key, new_data):
     if redis_client:
         try:
             existing_data = get_symbol_data(key)
-            if existing_data:
+            if existing_data and isinstance(existing_data, dict):
                 existing_data.update(new_data)
                 save_symbol_data(key, existing_data)
                 print(f"Data for key '{key}' updated successfully.")
