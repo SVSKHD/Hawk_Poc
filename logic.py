@@ -66,6 +66,10 @@ def analyze_pip_difference(symbol: Dict, start_price: float, current_price: floa
         data['negative_hedging_price'] = current_price
         update_symbol_data(symbol_name, data)
 
+    else:
+        save_symbol_data(symbol_name, data)
+        print("No thresholds met")
+
     print("---------------------------------------------------------------------")
 
     return data
