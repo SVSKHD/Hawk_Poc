@@ -22,6 +22,28 @@ symbols_config = [
         "pip_size": 0.0001,
         "lot_size": 1.0
     },
+    {
+        "symbol": "XAGUSD",
+        "positive_pip_difference": 15,
+        "negative_pip_difference": -15,
+        "positive_pip_range": 17,
+        "negative_pip_range": -17,
+        "close_trade_at": 10,
+        "close_trade_at_opposite_direction": 8,
+        "pip_size": 0.01,
+        "lot_size": 1.0
+    },
+    {
+        "symbol": "XAUUSD",
+        "positive_pip_difference": 15,
+        "negative_pip_difference": -15,
+        "positive_pip_range": 17,
+        "negative_pip_range": -17,
+        "close_trade_at": 10,
+        "close_trade_at_opposite_direction": 8,
+        "pip_size": 0.01,
+        "lot_size": 1.0
+    },
     # {
     #     "symbol": "NZDUSD",
     #     "positive_pip_difference": 15,
