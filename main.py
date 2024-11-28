@@ -5,7 +5,7 @@ from fetch_prices import fetch_price, get_server_time
 from trade_placement import place_trade_notify, hedge_place_trade, close_trades_by_symbol
 import asyncio
 from logic import analyze_pip_difference
-
+from datetime import datetime, timedelta
 
 async def check_thresholds_and_trade(symbol, start_price, current_price):
     symbol_name = symbol["symbol"]
@@ -53,16 +53,32 @@ async def check_thresholds_and_trade(symbol, start_price, current_price):
         print("negative_hedging", negative_hedging, negative_hedging_price)
         await hedge_place_trade(symbol, "buy", 1.0)
 
+async def calculate_time_difference():
+    server_time = await get_server_time()
+    if not server_time:
+        print("Failed to fetch server time.")
+        return None
+
+    local_time = datetime.utcnow()
+    time_difference = server_time - local_time
+    return time_difference
 
 async def main():
     connect = await connect_mt5()
     if connect:
         price_data = []
-        server_time = await get_server_time()
-
-        if not server_time:
-            print("Failed to fetch server time. Exiting.")
+        time_difference = await calculate_time_difference()
+        if time_difference is None:
+            print("Failed to calculate time difference. Exiting.")
             return
+
+        server_time = datetime.utcnow() + time_difference
+        print(f"Current server time: {server_time}")
+
+        local_12am = (datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) + time_difference).time()
+        local_12pm = (datetime.utcnow().replace(hour=12, minute=0, second=0, microsecond=0) + time_difference).time()
+        print(f"Server 12 AM will be at local time: {local_12am}")
+        print(f"Server 12 PM will be at local time: {local_12pm}")
 
         if server_time.hour >= 0 and server_time.hour < 12:
             print("It's between 12 AM and 12 PM server time. Setting start_trade to True and fetching start prices.")
@@ -81,11 +97,8 @@ async def main():
             clear_all_keys()
 
         while True:
-            server_time = await get_server_time()
-            if not server_time:
-                print("Failed to fetch server time. Retrying...")
-                await asyncio.sleep(60)
-                continue
+            server_time = datetime.utcnow() + time_difference
+            print(f"Current server time: {server_time}")
 
             if server_time.hour == 0 and server_time.minute == 0:
                 print("It's server 12 AM. Setting start_trade to True and fetching start prices.")
@@ -119,7 +132,6 @@ async def main():
                 print("Start trade is False. Waiting for server 12 AM.")
 
             await asyncio.sleep(60)  # Sleep for 1 minute to reduce API calls
-
 
 if __name__ == "__main__":
     asyncio.run(main())

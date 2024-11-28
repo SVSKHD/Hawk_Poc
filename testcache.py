@@ -13,3 +13,4 @@ for symbol in symbols_config:
 # data = get_start_trade()
 # print("state", data)
 
+# clear_all_keys()
