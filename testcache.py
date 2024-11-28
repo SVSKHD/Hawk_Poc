@@ -7,9 +7,9 @@ for symbol in symbols_config:
         print(data)
     else:
         print(f"No data found for {symbol['symbol']}")
-
-save_or_update_start_trade(True)
-
-data = get_start_trade()
-print("state", data)
+#
+# save_or_update_start_trade(True)
+#
+# data = get_start_trade()
+# print("state", data)
 
