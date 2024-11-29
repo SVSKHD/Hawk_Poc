@@ -82,7 +82,7 @@ async def main():
 
         if server_time.hour >= 0 and server_time.hour < 12:
             print("It's between 12 AM and 12 PM server time. Setting start_trade to True and fetching start prices.")
-            save_or_update_start_trade(True)
+            save_or_update_start_trade(False)
             for symbol in symbols_config:
                 start_price = await fetch_price(symbol, "start")
                 if start_price is not None:
@@ -92,7 +92,7 @@ async def main():
                         'current_price': start_price
                     })
         else:
-            print("It's between 12 PM and 12 AM server time. Setting start_trade to False.")
+            print("It's 12 PM or later server time. Setting start_trade to False.")
             save_or_update_start_trade(False)
             clear_all_keys()
 
@@ -112,8 +112,8 @@ async def main():
                             'start_price': start_price,
                             'current_price': start_price
                         })
-            elif server_time.hour == 12 and server_time.minute == 0:
-                print("It's server 12 PM. Setting start_trade to False and clearing all keys.")
+            elif server_time.hour >= 12:
+                print("It's server 12 PM or later. Setting start_trade to False and clearing all keys.")
                 save_or_update_start_trade(False)
                 clear_all_keys()
 
